@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,37 +37,46 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.movieapps.data.DataSource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.movieapps.model.Movie
+import com.example.movieapps.viewmodel.ListMovieUiState
+import com.example.movieapps.viewmodel.ListMovieViewModel
 
 @Composable
-fun ListMovieView(movieList : List<Movie>){
+fun ListMovieView(movieList: List<Movie>, onFavClicked: (Movie) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2)
-    ){
-        items(movieList){
+    ) {
+        items(movieList) { movie ->
+            var isLikedView by rememberSaveable {
+                mutableStateOf(movie.isLiked)
+            }
             MovieCard(
-                it,
+                movie,
                 Modifier
                     .padding(8.dp)
-                    .fillMaxSize()
+                    .fillMaxSize(), onFavClicked = {
+                    onFavClicked(movie)
+                    isLikedView = movie.isLiked
+                },
+                isLikedView = isLikedView
             )
         }
     }
 }
 
 @Composable
-fun MovieCard(movie : Movie, modifier: Modifier = Modifier){
+fun MovieCard(
+    movie: Movie, modifier: Modifier = Modifier, onFavClicked: () -> Unit, isLikedView: Boolean
 
-    var isLiked by rememberSaveable { mutableStateOf(false) }
+) {
     Card(
         modifier = modifier
-    ){
+    ) {
         Column {
             Box(
                 contentAlignment = Alignment.BottomEnd
-            )
-            {
+            ) {
                 Image(
                     painter = painterResource(id = movie.posterPath),
                     contentDescription = "Movie Poster",
@@ -77,31 +87,28 @@ fun MovieCard(movie : Movie, modifier: Modifier = Modifier){
                 )
 
                 FloatingActionButton(
-                    onClick = {
-                        isLiked = !isLiked
-                    },
+                    onClick = onFavClicked,
                     shape = CircleShape,
-                    modifier = Modifier
-                        .padding(end = 5.dp, bottom = 5.dp)
+                    modifier = Modifier.padding(end = 5.dp, bottom = 5.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
                         contentDescription = "Favorite",
-                        tint = if(isLiked){
+                        tint = if (isLikedView) {
                             Color.Red
-                        }else{
+                        } else {
                             Color.LightGray
                         }
                     )
                 }
             }
 
-            Row (
-                modifier = Modifier.padding(start =16.dp, end=16.dp,top = 16.dp ),
+            Row(
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
                 verticalAlignment = Alignment.Top
-            ){
+            ) {
                 Text(
-                    text= movie.title,
+                    text = movie.title,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
@@ -118,19 +125,18 @@ fun MovieCard(movie : Movie, modifier: Modifier = Modifier){
                 )
             }
 
-            Row (
+            Row(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Icon(
-                    imageVector = Icons.Filled.Star ,
+                    imageVector = Icons.Filled.Star,
                     contentDescription = "Star",
                     tint = Color(0xFFFDCC0D)
                 )
                 Text(
-                    text = "${movie.voteAverage}/10.0",
-                    modifier = Modifier.padding(start = 4.dp)
+                    text = "${movie.voteAverage}/10.0", modifier = Modifier.padding(start = 4.dp)
                 )
             }
 
@@ -147,7 +153,15 @@ fun MovieCard(movie : Movie, modifier: Modifier = Modifier){
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ListMovieViewPreview(){
-    ListMovieView(DataSource().loadMovie())
+fun ListMoviePreview() {
+    val listMovieViewModel: ListMovieViewModel = viewModel()
+    val status = listMovieViewModel.listMovieUiState
+    when (status) {
+        is ListMovieUiState.Loading -> {}
+        is ListMovieUiState.Success -> ListMovieView(movieList = status.data, onFavClicked = {
+            listMovieViewModel.onFavClicked(it)
+        })
 
+        is ListMovieUiState.Error -> {}
+    }
 }

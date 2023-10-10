@@ -12,7 +12,7 @@ data class Movie(
     val title: String,
     val voteAverage: Float,
     val voteCount: Int,
-    val isLiked: Boolean = false,
+    var isLiked: Boolean = false,
 ){
     @SuppressLint("SimpleDateFormat")
     fun getYear(): String{
