@@ -7,18 +7,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieapps.data.DataSource
 import com.example.movieapps.model.Movie
-import com.example.movieapps.viewmodel.ListMovieUiState.Loading
 import kotlinx.coroutines.launch
 
 
-sealed interface ListMovieUiState{
-    data class Success(val data: List<Movie>): ListMovieUiState
-    object Error: ListMovieUiState
-    object Loading: ListMovieUiState
+sealed interface ListMovieUIState{
+    data class Success(val data: List<Movie>):ListMovieUIState
+    object Error: ListMovieUIState
+    object Loading: ListMovieUIState
 }
 
 class ListMovieViewModel: ViewModel() {
-    var listMovieUiState: ListMovieUiState by mutableStateOf(Loading)
+    var listMovieUIState: ListMovieUIState by mutableStateOf(ListMovieUIState.Loading)
         private set
 
     private lateinit var data: List<Movie>
@@ -27,22 +26,19 @@ class ListMovieViewModel: ViewModel() {
         loadData()
     }
 
-    fun loadData() {
-        viewModelScope.launch {
-
-
+    fun loadData(){
+        viewModelScope.launch{
             try {
                 data = DataSource().loadMovie()
-
-                listMovieUiState = ListMovieUiState.Success(data)
-            } catch(e: Exception) {
-                listMovieUiState = ListMovieUiState.Error
+                listMovieUIState = ListMovieUIState.Success(data)
+            }catch(e: Exception){
+                listMovieUIState = ListMovieUIState.Error
             }
         }
     }
 
-    fun onFavClicked(movie: Movie) {
+    fun onFavClicked(movie: Movie){
         movie.isLiked = !movie.isLiked
+        // sent server updated movie to server
     }
-    //sent server updated movie to server
 }
