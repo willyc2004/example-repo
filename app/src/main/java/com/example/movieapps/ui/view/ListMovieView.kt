@@ -44,7 +44,8 @@ import com.example.movieapps.viewmodel.ListMovieViewModel
 @Composable
 fun ListMovieView(
     movieList: List<Movie>,
-    onFavClicked: (Movie) -> Unit
+    onFavClicked: (Movie) -> Unit,
+    onCardClick: (Movie) -> Unit
 ){
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -162,16 +163,5 @@ fun MovieCard(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun ListMoviePreview(){
-    val listMovieViewModel: ListMovieViewModel = viewModel()
-    val status = listMovieViewModel.listMovieUIState
-    when(status){
-        is ListMovieUIState.Loading -> {}
-        is ListMovieUIState.Success -> ListMovieView(
-            movieList = status.data,
-            onFavClicked = {movie ->
-                listMovieViewModel.onFavClicked(movie)
-            }
-        )
-        is ListMovieUIState.Error ->{}
-    }
+
 }

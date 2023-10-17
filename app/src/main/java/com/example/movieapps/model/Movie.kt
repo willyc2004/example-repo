@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 data class Movie(
+    val id: Int = -1,
     val overview: String,
     @DrawableRes val posterPath: Int,
     val releaseDate: Date,

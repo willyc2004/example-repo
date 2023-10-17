@@ -31,8 +31,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.movieapps.data.DataSource
 import com.example.movieapps.model.Movie
+import com.example.movieapps.ui.ListScreen
+import com.example.movieapps.viewmodel.ListMovieUIState
+import com.example.movieapps.viewmodel.MovieDetailUIState
+import com.example.movieapps.viewmodel.MovieDetailViewModel
 
 @Composable
 fun MovieDetailView(
@@ -124,9 +129,5 @@ fun MovieDetailView(
 @Composable
 private fun MovieDetailPreview(){
 
-    MovieDetailView(
-        movie = DataSource().loadMovie()[0],
-        onFavClicked = {}
-    )
 
 }
