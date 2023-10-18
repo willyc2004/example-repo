@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.example.movieapps.ui.MovieAppsRoute
 import com.example.movieapps.ui.theme.MovieAppsTheme
 
 
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-//                    ListMovieView(DataSource().loadMovie())
+                    MovieAppsRoute()
                 }
             }
         }
